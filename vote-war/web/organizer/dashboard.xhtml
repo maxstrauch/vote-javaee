@@ -1,0 +1,209 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition template="./../WEB-INF/templates/backend.xhtml"
+            xmlns="http://www.w3.org/1999/xhtml"
+            xmlns:h="http://xmlns.jcp.org/jsf/html"
+            xmlns:f="http://xmlns.jcp.org/jsf/core"
+            xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+            xmlns:oldf="http://java.sun.com/jsf/core">
+    <ui:param name="pageTitle" value="${msg['Page.dashboard']}" />
+    <ui:param name="dashboardPage" value="true" />
+    <ui:define name="content">
+        <!-- Script for delete and cancel -->
+        <script type="text/javascript">
+            function onDelete(title) {
+                var text = "${msg['Dashboard.question.onDelete']}";
+                text = text.replace(/\{0\}/, "\"" + title + "\"");
+                return confirm(text);
+            }
+            
+            function onCancel(title) {
+                var text = "${msg['Dashboard.question.onCancel']}";
+                text = text.replace(/\{0\}/, "\"" + title + "\"");
+                return confirm(text);
+            }
+        </script>
+        
+        <h:messages class="msgs" errorClass="error" infoClass="success" />
+        
+        <div class="tabpane" id="tabber1">
+            <ul>
+                <li><a href="#">${msg['Dashboard.published']}</a></li>
+                <li><a href="#">${msg['Dashboard.unpublished']}</a></li>
+                <li><a href="#">${msg['Dashboard.closed']}</a></li>
+                <li>
+                    <h:form>
+                        <h:commandLink class="button slim icon-add success" 
+                                       action="#{editPoll.newPoll()}" 
+                                       value="${msg['Dashboard.button.newPoll']}" />
+                    </h:form>
+                </li>
+            </ul>
+
+            <!-- Tab 1: published polls list -->
+            <div class="tab">
+                <ui:fragment rendered="${not publishedPolls.isEmpty()}">
+                    <h:form>
+                        <h:dataTable value="${publishedPolls.entries}" var="poll">
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.title']}" />
+                                </f:facet>
+                                <h:outputText value="${poll.title}" />
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.startDate']}" />
+                                </f:facet>
+                                <h:outputText value="${localeBean.formatDate(poll.startDate)}" />
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.endDate']}" />
+                                </f:facet>
+                                <h:outputText value="${localeBean.formatDate(poll.endDate)}" />
+                            </h:column>
+
+                            <h:column headerClass="action">
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.actions']}" />
+                                </f:facet>
+                                <h:commandLink class="button icon-edit icon-fix success set-left" 
+                                               action="#{publishedPolls.edit(poll)}" 
+                                               title="${msg['Dashboard.button.editLimited']}" />
+                                <h:commandLink class="button icon-x icon-fix danger set-middle" 
+                                               action="#{publishedPolls.cancel(poll)}" 
+                                               onclick="return onCancel('${poll.title}');"
+                                               title="${msg['Dashboard.button.cancel']}" />
+                                <h:commandLink class="button icon-delete icon-fix danger set-right" 
+                                               action="#{publishedPolls.delete(poll)}" 
+                                               onclick="return onDelete('${poll.title}');"
+                                               title="${msg['Dashboard.button.delete']}" />
+                            </h:column>
+                        </h:dataTable>
+                    </h:form>
+                </ui:fragment>
+                <ui:fragment rendered="${publishedPolls.isEmpty()}">
+                    <div class="table-empty">
+                        <h:outputText value="${msg['Pageable.emptyTable']}" />
+                    </div>
+                </ui:fragment>
+                <ui:include src="/WEB-INF/templates/pageabletable.xhtml">
+                    <ui:param name="source" value="${publishedPolls}"/>
+                </ui:include>
+            </div>
+                
+            <!-- Tab 2: unpublished polls (DRAFT) -->
+            <div class="tab">
+                <ui:fragment rendered="${not unpublishedPolls.isEmpty()}">
+                    <h:form>
+                        <h:dataTable value="${unpublishedPolls.entries}" var="poll">
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.title']}" />
+                                </f:facet>
+                                <h:outputText value="${poll.title}" />
+                            </h:column>
+
+                            <h:column headerClass="action">
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.actions']}" />
+                                </f:facet>
+                                <h:commandLink class="button icon-edit icon-fix success set-left" 
+                                               action="#{unpublishedPolls.edit(poll)}" 
+                                               title="${msg['Dashboard.button.edit']}" />
+                                <h:commandLink class="button generic icon-jump icon-fix set-middle" 
+                                               target="blank" 
+                                               action="#{unpublishedPolls.preview(poll)}" 
+                                               title="${msg['Dashboard.button.preview']}" />
+                                <h:commandLink class="button icon-delete icon-fix danger set-right" 
+                                               onclick="return onDelete('${poll.title}');"
+                                               action="#{unpublishedPolls.delete(poll)}" 
+                                               title="${msg['Dashboard.button.delete']}" />
+                            </h:column>
+                        </h:dataTable>
+                    </h:form>
+                </ui:fragment>
+                <ui:fragment rendered="${unpublishedPolls.isEmpty()}">
+                    <div class="table-empty">
+                        <h:outputText value="${msg['Pageable.emptyTable']}" />
+                    </div>
+                </ui:fragment>
+                <ui:include src="/WEB-INF/templates/pageabletable.xhtml">
+                    <ui:param name="source" value="${unpublishedPolls}"/>
+                </ui:include>
+            </div>
+            
+            <!-- Tab 3: closed polls -->
+            <div class="tab">
+                <ui:fragment rendered="${not closedPolls.isEmpty()}">
+                    <h:form>
+                        <h:dataTable value="${closedPolls.entries}" var="poll">
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.title']}" />
+                                </f:facet>
+                                <h:outputText value="${poll.title}" />
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.startDate']}" />
+                                </f:facet>
+                                <h:outputFormat value="${msg['Date.fromTo']}">
+                                    <f:param value="${localeBean.formatDate(poll.startDate)}" />
+                                    <f:param value="${localeBean.formatDate(poll.endDate)}" />
+                                </h:outputFormat>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.state']}" />
+                                </f:facet>
+                                <ui:fragment rendered="${poll.validResult}">
+                                    <h:outputFormat value="${msg['Dashboard.label.isPublic']}">
+                                        <f:param value="${localeBean.formatBoolean(poll.hasPublicResultsId())}" />
+                                    </h:outputFormat>
+                                </ui:fragment>
+                                <ui:fragment rendered="${not poll.validResult}">
+                                    <h:outputText value="${msg['Dashboard.error.noResults']}" />
+                                </ui:fragment>
+                            </h:column>
+
+                            <h:column headerClass="action">
+                                <f:facet name="header">
+                                    <h:outputText value="${msg['Dashboard.label.actions']}" />
+                                </f:facet>
+                                <ui:fragment rendered="${poll.validResult}">
+                                    <h:commandLink class="button icon-jump icon-fix generic set-left" 
+                                                   target="_blank"
+                                                   action="#{closedPolls.gotoResult(poll)}" 
+                                                   title="${msg['Dashboard.button.publish']}" />
+                                    <h:commandLink class="button generic icon-fix set-middle ${poll.hasPublicResultsId() ? 'icon-no-eye' : 'icon-eye'}" 
+                                                   action="#{closedPolls.togglePublish(poll)}" 
+                                                   title="${msg['Dashboard.button.publish']}" />
+                                    <h:commandLink class="button icon-mail icon-fix generic set-right" 
+                                                   disabled="${not poll.hasPublicResultsId()}" 
+                                                   action="#{closedPolls.sendResultsToParticipants(poll)}" 
+                                                   title="${msg['Dashboard.button.invitation']}" />
+                                </ui:fragment>
+                                <h:commandLink class="button icon-delete danger icon-fix" 
+                                               action="#{closedPolls.delete(poll)}" 
+                                               title="${msg['Dashboard.button.delete']}"
+                                               onclick="return onDelete('${poll.title}');" />
+                            </h:column>
+                        </h:dataTable>
+                    </h:form>
+                </ui:fragment>
+                <ui:fragment rendered="${closedPolls.isEmpty()}">
+                    <div class="table-empty">
+                        <h:outputText value="${msg['Pageable.emptyTable']}" />
+                    </div>
+                </ui:fragment>
+                <ui:include src="/WEB-INF/templates/pageabletable.xhtml">
+                    <ui:param name="source" value="${closedPolls}"/>
+                </ui:include>      
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

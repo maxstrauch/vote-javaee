@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    <application>
+       <resource-bundle>
+           <base-name>de.vote.Language</base-name>
+           <var>msg</var>
+       </resource-bundle>
+    </application>
+    
+    <!-- Exception handler factory -->
+    <factory>
+        <exception-handler-factory>de.vote.web.ViewExpiredExceptionExceptionHandlerFactory</exception-handler-factory>
+    </factory>
+    
+    <!-- Logical navigation -->
+    <navigation-rule>
+        <from-view-id>*</from-view-id>
+        <navigation-case>
+            <from-outcome>dashboard</from-outcome>
+            <to-view-id>/organizer/dashboard.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>alter-passwd</from-outcome>
+            <to-view-id>/organizer/alter-password.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>manage-principals</from-outcome>
+            <to-view-id>/admin/manage-principals.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>delete-polls</from-outcome>
+            <to-view-id>/admin/delete-polls.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>login</from-outcome>
+            <to-view-id>/login.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>about</from-outcome>
+            <to-view-id>/about.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/index.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>vote</from-outcome>
+            <to-view-id>/vote.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/vote.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>thankyou</from-outcome>
+            <to-view-id>/thankyou.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>vote</from-outcome>
+            <to-view-id>/vote.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>self</from-outcome>
+            <to-view-id>/vote.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/admin/manage-principals.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>self</from-outcome>
+            <to-view-id>/admin/manage-principals.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>edit</from-outcome>
+            <to-view-id>/admin/edit-principal.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/organizer/dashboard.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>edit</from-outcome>
+            <to-view-id>/organizer/edit-poll.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>self</from-outcome>
+            <to-view-id>/organizer/dashboard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>preview</from-outcome>
+            <to-view-id>/vote.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>results</from-outcome>
+            <to-view-id>/results.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/organizer/edit-poll.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>self</from-outcome>
+            <to-view-id>/organizer/edit-poll.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>dashboard</from-outcome>
+            <to-view-id>/organizer/dashboard.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/organizer/alter-password.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>self</from-outcome>
+            <to-view-id>/organizer/alter-password.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/admin/edit-principal.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>manage</from-outcome>
+            <to-view-id>/admin/manage-principals.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/login.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>self</from-outcome>
+            <to-view-id>/login.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>welcome</from-outcome>
+            <to-view-id>/organizer/dashboard.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/thankyou.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/about.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+</faces-config>

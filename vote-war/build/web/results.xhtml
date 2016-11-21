@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition template="./WEB-INF/templates/frontend.xhtml"
+            xmlns="http://www.w3.org/1999/xhtml"
+            xmlns:h="http://xmlns.jcp.org/jsf/html"
+            xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+            xmlns:f="http://xmlns.jcp.org/jsf/core"
+            xmlns:oldf="http://java.sun.com/jsf/core"
+            xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <oldf:metadata>
+        <oldf:viewParam id="id" name="id" value="#{viewResults.id}" />
+    </oldf:metadata>
+    <ui:param name="pageTitle" value="${msg['Results.title']}"/>
+    <ui:define name="content">
+        <!-- If unknown id -->
+        <ui:fragment rendered="${not viewResults.hasPollResult()}">
+            <ul class="msgs">
+                <li class="error">
+                    <h:outputText value="${msg['Results.error.nothing']}" />
+                </li>
+            </ul>
+        </ui:fragment>
+        
+        <!-- Otherwise -->
+        <ui:fragment rendered="${viewResults.hasPollResult()}">
+            <h2><h:outputText value="${viewResults.pollResult.title}" /></h2>
+            <p>
+                <h:outputText value="${viewResults.pollResult.description}" />
+            </p>
+            <p class="info">
+                <h:outputFormat value="${msg['Results.info.poll']}">
+                    <f:param value="${localeBean.formatDate(viewResults.pollResult.startDate)}" />
+                    <f:param value="${localeBean.formatDate(viewResults.pollResult.endDate)}" />
+                    <f:param value="${viewResults.pollResult.participations}" />
+                    <f:param value="${viewResults.pollResult.participants}" />
+                    <f:param value="${viewResults.pollResult.voterParticipation()}" />
+                </h:outputFormat>
+                <br/>
+                <ui:fragment rendered="${viewResults.hasShareHyperlink()}">
+                    <h:outputText value="${msg['Results.info.share']}" />
+                    <input type="text" size="42" value="${viewResults.getShareHyperlink()}" />
+                </ui:fragment>
+            </p>
+            
+            <!-- Item results -->
+            <ui:repeat value="${viewResults.pollResult.items}" var="item" varStatus="loop">
+                <div class="result-item">
+                    <h2><h:outputText value="${loop.index + 1}. ${item.title}" /></h2>
+                    <ul class="result-graph">
+                        <!-- Scale -->
+                        <c:forEach begin="0" end="90" step="10" var="i">
+                            <li class="label p9">
+                                <h:outputText value="${i}%" />
+                            </li>
+                        </c:forEach>
+                        <li class="clearfix"></li>
+                        
+                        <!-- Results -->
+                        <ui:repeat value="${item.options}" var="option" varStatus="loop">
+                            <li class="p${option.participationRounded()}">
+                                <label>
+                                    <h:outputFormat value="{0} {1}">
+                                        <f:param value="${option.shortName}" />
+                                        <f:param value="${option.description}" />
+                                    </h:outputFormat><br/>
+                                    <em>
+                                        <h:outputFormat value="{0}% ({1}/{2})">
+                                            <f:param value="${option.participation()}" />
+                                            <f:param value="${option.tally}" />
+                                            <f:param value="${item.totalTally}" />
+                                        </h:outputFormat>
+                                    </em>
+                                </label>
+                            </li>
+                        </ui:repeat>
+
+                        <li class="p${item.voidParticipationRounded()}">
+                            <label>
+                                <h:outputText value="${msg['Results.label.void']}" /><br/>
+                                <em>
+                                    <h:outputFormat value="{0}% ({1}/{2})">
+                                        <f:param value="${item.voidParticipation()}" />
+                                        <f:param value="${item.voidTally}" />
+                                        <f:param value="${item.totalTally}" />
+                                    </h:outputFormat>
+                                </em>
+                            </label>
+                        </li>
+                        <div class="clearfix"></div>
+                    </ul>
+                </div>
+            </ui:repeat>
+            
+            <!-- Close button -->
+            <a class="button generic" href="javascript:window.close()">
+                <h:outputText value="${msg['Results.button.close']}" />
+            </a>
+        </ui:fragment>
+    </ui:define>
+</ui:composition>

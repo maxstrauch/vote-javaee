@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" 
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    
+    <!-- Welcome file in the web/ folder -->
+    <welcome-file-list>
+        <welcome-file>index.xhtml</welcome-file>
+    </welcome-file-list>
+    
+    <!-- Run JSF on any XHTML file request -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Various filters, see documentation -->    
+    <filter>
+        <filter-name>HttpToHttpsFilter</filter-name>
+        <filter-class>de.vote.web.filter.HttpToHttpsFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HttpToHttpsFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <url-pattern>/admin/*</url-pattern>
+        <url-pattern>/organizer/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>JumpToIndexFilter</filter-name>
+        <filter-class>de.vote.web.filter.JumpToIndexFilter</filter-class>
+        </filter>
+    <filter-mapping>
+        <filter-name>JumpToIndexFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>JumpToDashboardFilter</filter-name>
+        <filter-class>de.vote.web.filter.JumpToDashboardFilter</filter-class>
+        </filter>
+    <filter-mapping>
+        <filter-name>JumpToDashboardFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>LocaleFilter</filter-name>
+        <filter-class>de.vote.web.filter.LocaleFilter</filter-class>
+        </filter>
+    <filter-mapping>
+        <filter-name>LocaleFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>NoCacheFilter</filter-name>
+        <filter-class>de.vote.web.filter.NoCacheFilter</filter-class>
+        </filter>
+    <filter-mapping>
+        <filter-name>NoCacheFilter</filter-name>
+        <url-pattern>/index.xhtml</url-pattern>
+        <url-pattern>/vote.xhtml</url-pattern>
+        <url-pattern>/thankyou.xhtml</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    
+    <!-- Constraint for organizer area -->
+    <security-constraint>
+            <display-name>Authenticated organizer access</display-name>
+            <web-resource-collection>
+                    <web-resource-name>Vote! poll management</web-resource-name>
+                    <description/>
+                    <url-pattern>/organizer/*</url-pattern>
+            </web-resource-collection>
+            <auth-constraint>
+                    <description>Authenticated organizers only</description>
+                    <role-name>ORGANIZER</role-name>
+            </auth-constraint>
+    </security-constraint>
+        
+    <!-- Constraint for administrator area -->
+    <security-constraint>
+            <display-name>Administrative access</display-name>
+            <web-resource-collection>
+                    <web-resource-name>Vote! administrative management</web-resource-name>
+                    <description/>
+                    <url-pattern>/admin/*</url-pattern>
+            </web-resource-collection>
+            <auth-constraint>
+                    <description>Administrators only</description>
+                    <role-name>ADMINISTRATOR</role-name>
+            </auth-constraint>
+    </security-constraint>
+    
+    <!-- Login method -->
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <realm-name>VoteRealm</realm-name>
+        <form-login-config>
+            <form-login-page>/login.xhtml</form-login-page>
+            <form-error-page>/login.xhtml</form-error-page>
+        </form-login-config>
+    </login-config>
+    
+    <!-- MIME type for font -->
+    <mime-mapping> 
+        <extension>woff</extension>
+        <mime-type>application/x-font-woff</mime-type> 
+    </mime-mapping>
+</web-app>

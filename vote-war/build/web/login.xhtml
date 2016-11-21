@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition template="./WEB-INF/templates/frontend.xhtml"
+            xmlns="http://www.w3.org/1999/xhtml"
+            xmlns:h="http://xmlns.jcp.org/jsf/html"
+            xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+            xmlns:oldf="http://java.sun.com/jsf/core">
+    <ui:param name="pageTitle" value="${msg['Login.title']}"/>
+    <ui:param name="loginPage" value="true"/>
+    <ui:define name="content">
+        <!-- The login form -->
+        <h:form rendered="${not voteSession.isSignedIn()}">
+            <h:messages class="msgs" errorClass="error" infoClass="success" />
+            <div class="form-layout">
+                <div class="form-row">
+                    <h:outputLabel value="${msg['Login.label.username']}" />
+                    <h:inputText  value="#{loginForm.name}" />
+                </div>
+                <div class="form-row">
+                    <h:outputLabel value="${msg['Login.label.passwd']}" />
+                    <h:inputSecret value="#{loginForm.passwd}" />
+                </div>
+                <div class="form-row-ctrls">
+                    <h:commandButton value="${msg['Login.button.login']}" 
+                                     class="button set-left generic" 
+                                     action="#{loginForm.login()}" />
+                    <h:commandButton value="${msg['Login.button.cancel']}" 
+                                     class="button set-right" 
+                                     action="#{loginForm.cancel()}" />
+                </div>
+            </div>
+        </h:form>
+        <ui:fragment rendered="${voteSession.isSignedIn()}">
+            <h:form>
+                <h:commandLink class="button generic icon-lock-open" 
+                               action="organizer/dashboard?faces-redirect=true" 
+                               value="${msg['Index.button.backend']}" />
+            </h:form>
+        </ui:fragment>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,263 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition template="../WEB-INF/templates/backend.xhtml"
+            xmlns="http://www.w3.org/1999/xhtml"
+            xmlns:h="http://xmlns.jcp.org/jsf/html"
+            xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+            xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:param name="pageTitle" value="${msg[editPoll.editMode ? 
+                            'EditPoll.edit.title' : 'EditPoll.new.title']}"/>
+    <ui:define name="content">
+        <!-- Message output -->
+        <h:messages class="msgs" errorClass="error" infoClass="success" />
+
+        <!-- Main form -->
+        <h:form>
+
+            <div class="tabpane" id="tabber2_${editPoll.poll.state}_${editPoll.poll.id}">
+                <ul>
+                    <li><a href="#">${msg['EditPoll.label.general']}</a></li>
+                    <ui:fragment rendered="${not editPoll.isRestrictedMode()}">
+                        <li><a href="#">${msg['EditPoll.label.questions']}</a></li>
+                    </ui:fragment>
+                    <li><a href="#">${msg['EditPoll.label.participants']}</a></li>
+                    <li><a href="#">${msg['EditPoll.label.organizers']}</a></li>
+
+                </ul>
+
+                <!-- Tab 1: general -->
+                <div class="tab">
+                    <!-- Reminder mail -->
+                    <ui:fragment rendered="${editPoll.poll.reminderSend}">
+                        <p class="success">
+                            <h:outputText value="${msg['EditPoll.info.reminderSend']}" />
+                        </p>
+                    </ui:fragment>
+
+                    <div class="form-layout">
+                        <div class="form-row">
+                            <h:outputLabel value="${msg['EditPoll.label.title']}" />
+                            <h:inputText disabled="${editPoll.isRestrictedMode()}" 
+                                         value="#{editPoll.poll.title}"
+                                         size="42" />
+                        </div>
+                        <div class="form-row">
+                            <h:outputLabel value="${msg['EditPoll.label.startDate']}" />
+                            <h:inputText disabled="${editPoll.isRestrictedMode()}" 
+                                         value="#{editPoll.poll.startDate}" 
+                                         converter="VoteDateConverter" />
+                            <h:outputText value="${msg['EditPoll.label.startDate.desc']}" />
+                        </div>
+                        <div class="form-row">
+                            <h:outputLabel value="${msg['EditPoll.label.endDate']}" />
+                            <h:inputText  value="#{editPoll.poll.endDate}" 
+                                          converter="VoteDateConverter" />
+                            <h:outputText value="${msg['EditPoll.label.endDate.desc']}" />
+                        </div>
+                        <div class="form-row">
+                            <h:outputLabel value="${msg['EditPoll.label.reminder']}" />
+                            <h:outputText value="${msg['EditPoll.label.reminder.desc1']}" />
+                            <h:inputText disabled="${editPoll.isRestrictedMode() and editPoll.poll.reminderSend}" 
+                                         value="#{editPoll.poll.reminderBeforeEnd}"
+                                         class="x-small" />
+                            <h:outputText value="${msg['EditPoll.label.reminder.desc2']}" />
+                        </div>
+                        <div class="form-row">
+                            <h:outputLabel value="${msg['EditPoll.label.tracking']}" />
+                            <h:selectBooleanCheckbox disabled="${editPoll.isRestrictedMode()}" 
+                                                     value="#{editPoll.poll.participationTracking}" 
+                                                     id="tracking" />
+                            <h:outputLabel for="tracking" 
+                                           class="none"
+                                           value="${msg['EditPoll.label.tracking.desc']}" />
+                        </div>
+                        <div class="form-row">
+                            <h:outputLabel value="${msg['EditPoll.label.description']}" />
+                            <h:inputTextarea disabled="${editPoll.isRestrictedMode()}" 
+                                             value="#{editPoll.poll.description}"
+                                             rows="8" cols="84" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: questions -->
+                <ui:fragment rendered="${not editPoll.isRestrictedMode()}">
+                    <div class="tab">
+
+                        <ui:repeat value="#{editPoll.poll.items}" var="item" varStatus="loop">
+                            <div class="vote-admin">
+                                <div class="vote-index">
+                                    <h:outputText value="${loop.index + 1}." />
+                                </div>
+                                <div class="form-layout first">
+                                    <div class="form-row">
+                                        <h:outputLabel value="${msg['EditPoll.label.questionTitle']}" />
+                                        <h:inputText size="42" value="#{item.title}" />
+                                    </div>
+                                    <div class="form-row">
+                                        <h:outputLabel value="${msg['EditPoll.label.selectCount']}" />
+                                        <h:inputText disabled="${item.yesNo}" 
+                                                     class="x-small" 
+                                                     value="#{item.m}" />
+                                    </div>
+                                    <div class="form-row-ctrls">
+                                        <h:commandLink class="button icon-delete icon-fix danger set-left"
+                                                       disabled="${editPoll.poll.getItems().size() lt 2}" 
+                                                       action="#{editPoll.doDeleteItem(item)}" 
+                                                       title="${msg['EditPoll.button.deleteQuestion']}" />
+                                        <h:commandLink class="button icon-add icon-fix success set-right" 
+                                                       disabled="${item.yesNo}" 
+                                                       action="#{editPoll.doAddOption(item)}" 
+                                                       title="${msg['EditPoll.button.addAnswer']}" />
+                                    </div>
+                                </div>
+
+                                <ui:repeat value="#{item.options}" var="option" varStatus="loop">
+                                    <div class="vote-answer form-layout">
+                                        <div class="form-row">
+                                            <h:outputLabel value="${msg['EditPoll.label.answerShort']}" />
+                                            <h:inputText disabled="${item.yesNo}" 
+                                                         value="#{option.shortName}"
+                                                         size="42" />
+                                        </div>
+                                        <div class="form-row">
+                                            <h:outputLabel value="${msg['EditPoll.label.answerDesc']}" />
+                                            <h:inputText value="#{option.description}"
+                                                         size="42" />
+                                        </div>
+                                        <div class="form-row-ctrls">
+                                            <h:commandLink class="button icon-delete icon-fix danger" 
+                                                           rendered="${not item.yesNo}" 
+                                                           disabled="#{item.getOptions().size() lt 2}" 
+                                                           action="#{editPoll.doDeleteOption(item, option)}" 
+                                                           title="${msg['EditPoll.button.deleteAnswer']}" />
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </ui:repeat>
+                        <h:commandLink class="button success icon-add set-left"
+                                       action="#{editPoll.doAddItem(editPoll.poll, false)}" 
+                                       value="${msg['EditPoll.button.addMC']}" />
+                        <h:commandLink class="button success icon-add set-right"
+                                       action="#{editPoll.doAddItem(editPoll.poll, true)}" 
+                                       value="${msg['EditPoll.button.addYN']}" />
+                    </div>
+                </ui:fragment>
+
+                <!-- Tab 3: participants -->
+                <div class="tab">
+
+                    <!-- Tracking info -->
+                    <h:outputFormat class="success"
+                                    escape="false"
+                                    rendered="${editPoll.isRestrictedMode() and 
+                                                editPoll.poll.participationTracking}"
+                                    value="${msg['EditPoll.info.tracking']}">
+                        <f:param value="${editPoll.poll.getParticipationCount()}" />
+                        <f:param value="${editPoll.poll.participants.size()}" />
+                    </h:outputFormat>
+
+                    <!-- Output participants -->
+                    <ui:fragment rendered="${editPoll.poll.id > -1 and editPoll.isRestrictedMode()}">
+                        <p class="notice">
+                            <ui:repeat value="${editPoll.poll.participants}" var="participant" varStatus="loop">
+                                <span class="tag">
+                                    <h:outputText value="${participant.email}" />
+                                    <ui:fragment rendered="${editPoll.poll.participationTracking and t.participated}">
+                                        <em>
+                                            <h:outputText value="${msg['EditPoll.label.participated']}" />
+                                        </em>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="${editPoll.poll.participationTracking and not participant.participated}">
+                                        <em class="danger">
+                                            <h:outputText value="${msg['EditPoll.label.notParticipated']}" />
+                                        </em>
+                                    </ui:fragment>
+                                </span>
+                            </ui:repeat>
+                        </p>
+                    </ui:fragment>
+
+                    <!-- Participants -->
+                    <ui:fragment rendered="${not editPoll.isRestrictedMode()}">
+                        <h:selectManyListbox class="default-select" 
+                                             value="#{editPoll.selectedParticipants}">
+                            <f:selectItems value="#{editPoll.poll.participants}" var="o" 
+                                           itemLabel="#{o.email}" itemValue="#{o.id}" />
+                        </h:selectManyListbox>
+
+                        <h:commandLink class="button danger icon-delete" 
+                                       action="#{editPoll.doDeleteParticipants()}" 
+                                       value="${msg['EditPoll.button.removeSelection']}" />
+
+                        <fieldset class="vote-admin-fieldset">
+                            <legend>
+                                <h:outputText value="${msg['EditPoll.label.sourceOld']}" />
+                            </legend>
+                            <h:selectOneMenu style="margin: 0 10px 0 0;" 
+                                             value="${editPoll.selectedParticipantSet}">
+                                <f:selectItems value="#{editPoll.participantSets}" var="f" 
+                                               itemLabel="#{f.title}" itemValue="#{f.id}" />
+                            </h:selectOneMenu>
+                            <h:commandLink class="button success icon-add" 
+                                           action="#{editPoll.doAddParticipantSet()}" 
+                                           value="${msg['EditPoll.button.addToList']}" />
+                        </fieldset>
+
+                        <fieldset class="vote-admin-fieldset">
+                            <legend>
+                                <h:outputText value="${msg['EditPoll.label.sourceFreetext']}" />
+                            </legend>
+                            <h:inputTextarea class="small-textarea" value="#{editPoll.rawEMailInput}" />
+                            <h:commandLink class="button success icon-add" 
+                                           action="#{editPoll.doRecognizeRawEMails()}" 
+                                           value="${msg['EditPoll.button.addToList']}" />
+                        </fieldset>
+                    </ui:fragment>
+                </div>
+
+                <!-- Tab 4: organizers -->
+                <div class="tab">
+                    <h:selectManyListbox class="default-select" value="#{editPoll.selectedOrganizers}">
+                        <f:selectItems value="#{editPoll.poll.organizers}" var="f" 
+                                       itemLabel="#{f.toString()}" itemValue="#{f.id}" />
+                    </h:selectManyListbox>
+
+                    <h:commandLink class="button danger icon-delete" 
+                                     action="#{editPoll.doDeleteOrganizers()}" 
+                                     value="${msg['EditPoll.button.removeSelection']}" />
+
+                    <fieldset class="vote-admin-fieldset">
+                        <legend>
+                            <h:outputText value="${msg['EditPoll.label.otherOrgans']}" />
+                        </legend>
+
+                        <h:selectOneMenu style="margin: 0 10px 0 0;" 
+                                         value="#{editPoll.addOrganizer}">
+                            <f:selectItems value="#{editPoll.allOrganizers}" var="f" 
+                                           itemLabel="#{f.realname}" itemValue="#{f.id}" />
+                        </h:selectOneMenu>
+
+                        <h:commandLink class="button success icon-add" 
+                                         action="#{editPoll.doAddOrganizer()}" 
+                                         value="${msg['EditPoll.button.addToList']}" />
+                        
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="form-space">
+                <h:commandLink class="button set-left"
+                               action="#{editPoll.cancel()}" 
+                               value="${msg['EditPoll.button.cancel']}" />
+                <h:commandLink class="button success set-middle icon-save"
+                               action="#{editPoll.save(false)}" 
+                               value="${msg['EditPoll.button.save']}" />
+                <h:commandLink class="button success set-right icon-publish"
+                               rendered="${not editPoll.isRestrictedMode()}" 
+                               action="#{editPoll.save(true)}" 
+                               value="${msg['EditPoll.button.saveAndPublich']}" />
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

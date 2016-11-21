@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <!-- Set the right locale -->
+    <f:view locale="${localeBean.locale}" />
+    <h:head>
+        <title>Vote Verwaltung - <h:outputText value="${pageTitle}"/></title>
+        <meta charset="utf-8"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="shortcut icon" href="#{resource['img:favicon.ico']}" />
+        <link href="#{resource['css:style.css']}" rel="stylesheet" media="screen" />
+        <script type="text/javascript" src="#{resource['js:script.js']}"></script>
+    </h:head>
+    <h:body>
+        <!-- Global naviagation -->
+        <ui:fragment rendered="${voteSession.isSignedIn()}">
+            <h:form>
+                <ul class="navigation">
+                    <li class="left vote-logo">
+                        <h:commandLink action="index" value="Vote!" />
+                    </li>
+                    <ui:repeat value="${localeBean.supportedLocales}" var="locale" varStatus="loop">
+                        <li class="left">
+                            <h:commandLink 
+                               action="#{localeBean.setLocale(locale)}" 
+                               class="icon-flag lang ${locale.equals(localeBean.locale) ? ' selected' : ''}"
+                               title="${locale.getDisplayLanguage(localeBean.locale)}"
+                               value="${locale.getLanguage().toUpperCase()}" />
+                        </li>
+                    </ui:repeat>
+                    <li class="right">
+                        <h:commandLink action="#{loginForm.logout()}" 
+                                       value="${msg['Page.logout']}" />
+                    </li>
+                    <ui:fragment rendered="${voteSession.isAdmin()}">
+                        <li class="right admin">
+                            <h:commandLink action="delete-polls" 
+                                           class="${deletePollsPage == true ? 'selected ' : ''}" 
+                                           value="${msg['Page.deletePolls']}" />
+                        </li>
+                    </ui:fragment>
+                    <li class="right">
+                        <h:commandLink action="dashboard" 
+                                       value="${msg['Page.dashboard']}"
+                                       class="${dashboardPage == true ? 'selected ' : ''}"/>
+                    </li>
+                    <li class="right text">
+                        <em class="icon-user">
+                            <h:outputText value="Howdy, ${voteSession.getName()}!" />
+                        </em>
+                    </li>
+                    <div class="clearfix"></div>
+                </ul>
+            </h:form>
+        </ui:fragment>
+
+        <!-- Page -->
+        <div class="content">
+            <h1><h:outputText value="${pageTitle}"/></h1>
+            <ui:insert name="content"/>
+        </div>
+        <footer>                
+            <h:outputFormat escape="false" value="${msg['About.footer']}">
+                <f:param value="${version.id}" />
+            </h:outputFormat>
+            <!--
+            
+                No longer needed since this version is dedicated to LDAP
+                authentification only and the original ComboRealm isn't
+                used.
+            
+            <ui:fragment rendered="${voteSession.principal.thridPartyAuthorized}">
+                <em>${msg['Admin.login3rdParty']}</em>
+            </ui:fragment>
+            -->
+        </footer>
+    </h:body>
+</html>

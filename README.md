@@ -1,4 +1,4 @@
-# ![Vote! program icon](/vote-logo-sm.png?raw=true "Vote! program icon") Vote!
+# [![Vote! program icon](/vote-logo-sm.png?raw=true "Vote! program icon")](/vote-logo.png?raw=true) - Polls made easy
 
 Vote! is a web-based application for creating and executing online polls based on JavaEE. Once you have signed up as an organizer you can create polls with an arbitrary number of questions, each one consisting of an arbitrary number of options. After adding all participants to your poll, they automatically receive an invitation e-mail. At the end of the poll its results can be viewed online.
 
